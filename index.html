@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Select Options</title>
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1><strong>Find Property</strong></h1>
+
+    <label for="destination">Destination:</label>
+    <select id="destination">
+        <option value="">--Select a destination--</option>
+        <option value="sahel">Sahel</option>
+        <option value="zayed">Zayed</option>
+        <option value="october">October</option>
+    </select>
+
+    <label for="requestType">Request Type:</label>
+    <select id="requestType">
+        <option value="">--Select a request type--</option>
+        <option value="unit_to_buyer">Unit To Buyer</option>
+    </select>
+
+    <div id="buyOptionContainer" class="hidden">
+        <label for="buyOption">Buy Option:</label>
+        <select id="buyOption">
+            <option value="">--Select an option--</option>
+            <option value="recommended">Recommended</option>
+            <option value="highly_recommended">Highly Recommended</option>
+        </select>
+
+        <label for="buyValidFor">Buying Request Valid For:</label>
+        <select id="buyValidFor">
+            <option value="">--Select a validity period--</option>
+            <option value="1_week">1 Week</option>
+            <option value="2_weeks">2 Weeks</option>
+        </select>
+    </div>
+
+    <div id="unitStatusContainer" class="hidden">
+        <label for="unitStatus">Unit Status:</label>
+        <select id="unitStatus">
+            <option value="">--Select a status--</option>
+            <option value="delivered">Delivered</option>
+            <option value="not_delivered">Not Delivered Yet</option>
+        </select>
+
+        <label for="sellValidFor">Selling Request Valid For:</label>
+        <select id="sellValidFor">
+            <option value="">--Select a validity period--</option>
+            <option value="1_week">1 Week</option>
+            <option value="2_weeks">2 Weeks</option>
+        </select>
+    </div>
+
+    <div id="deliveryDateContainer" class="hidden">
+        <label for="deliveryDate">Date of Delivery:</label>
+        <input type="date" id="deliveryDate">
+    </div>
+
+    <label for="project">Project of Interest:</label>
+    <select id="project" disabled>
+        <option value="">--Select a project--</option>
+    </select>
+
+    <label for="bottom">Community:</label>
+    <select id="bottom" disabled>
+        <option value="">--Select a community--</option>
+    </select>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const destinationSelect = document.getElementById('destination');
+            const requestTypeSelect = document.getElementById('requestType');
+            const buyOptionContainer = document.getElementById('buyOptionContainer');
+            const buyValidForSelect = document.getElementById('buyValidFor');
+            const unitStatusContainer = document.getElementById('unitStatusContainer');
+            const unitStatusSelect = document.getElementById('unitStatus');
+            const sellValidForSelect = document.getElementById('sellValidFor');
+            const deliveryDateContainer = document.getElementById('deliveryDateContainer');
+            const projectSelect = document.getElementById('project');
+            const bottomSelect = document.getElementById('bottom');
+
+            const projectOptions = {
+                sahel: ['Marassi'],
+                zayed: ['Belle Vie'],
+                october: ['Cairo Gate']
+            };
+
+            destinationSelect.addEventListener('change', function() {
+                const destination = this.value;
+
+                // Enable the project select dropdown
+                projectSelect.disabled = false;
+
+                // Clear previous options in the project select dropdown
+                projectSelect.innerHTML = '';
+
+                // Populate the project select dropdown with a default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = '--Select a project--';
+                projectSelect.appendChild(defaultOption);
+
+                // Populate the project select dropdown based on the selected destination
+                if (projectOptions[destination]) {
+                    projectOptions[destination].forEach(function(project) {
+                        const option = document.createElement('option');
+                        option.value = project.toLowerCase().replace(' ', '_');
+                        option.textContent = project;
+                        projectSelect.appendChild(option);
+                    });
+                } else {
+                    // If no options are available for the selected destination, show a default message
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = '--No projects available--';
+                    projectSelect.appendChild(option);
+                }
+            });
+
+            requestTypeSelect.addEventListener('change', function() {
+                const requestType = this.value;
+
+                // Show or hide containers based on the request type
+                if (requestType === 'unit_to_buyer') {
+                    unitStatusContainer.classList.remove('hidden');
+                    buyOptionContainer.classList.add('hidden');
+                    buyValidForSelect.value = '';
+                } else {
+                    unitStatusContainer.classList.add('hidden');
+                    buyOptionContainer.classList.add('hidden');
+                    unitStatusSelect.value = '';
+                    sellValidForSelect.value = '';
+                    buyValidForSelect.value = '';
+                    deliveryDateContainer.classList.add('hidden');
+                }
+            });
+
+            unitStatusSelect.addEventListener('change', function() {
+                const unitStatus = this.value;
+
+                // Show or hide the delivery date container based on the unit status
+                if (unitStatus === 'not_delivered') {
+                    deliveryDateContainer.classList.remove('hidden');
+                } else {
+                    deliveryDateContainer.classList.add('hidden');
+                }
+            });
+
+            projectSelect.addEventListener('change', function() {
+                const project = this.value;
+
+                // Enable the bottom select dropdown
+                bottomSelect.disabled = false;
+
+                // Define bottoms options based on the selected project
+                const bottoms = {
+                    cairo_gate: ['Grand Residence', 'Aspen', 'Eden', 'Elan', 'Gardenx'],
+                    marassi: ['Verdi', 'Blanca', 'Isola', 'Lea', 'Faya'],
+                    belle_vie: ['Valley Villas', 'Lake Villas', 'Field Villas']
+                };
+
+                // Clear previous options in the bottom select dropdown
+                bottomSelect.innerHTML = '';
+
+                // Populate the bottom select dropdown with a default option
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = '--Select a community--';
+                bottomSelect.appendChild(defaultOption);
+
+                // Populate the bottom select dropdown with options based on the selected project
+                if (bottoms[project]) {
+                    bottoms[project].forEach(function(bottom) {
+                        const option = document.createElement('option');
+                        option.value = bottom.toLowerCase().replace(' ', '_');
+                        option.textContent = bottom;
+                        bottomSelect.appendChild(option);
+                    });
+                } else {
+                    // If no suggestions are available for the selected project, show a default message
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = '--No suggestions available--';
+                    bottomSelect.appendChild(option);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
